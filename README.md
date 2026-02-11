@@ -1,3 +1,55 @@
+# Video to Blog
+
+Generate an SEO blog article from a video: upload an .mp4 → extract audio (FFmpeg) → transcribe (OpenAI Whisper) → generate blog (Google Gemini). Runs locally with no database.
+
+## Local setup
+
+### 1. FFmpeg
+
+Install [FFmpeg](https://ffmpeg.org/) and ensure `ffmpeg` is on your PATH.
+
+### 2. Backend
+
+```bash
+cd backend
+cp .env.example .env
+# Edit .env and set GEMINI_API_KEY=your-key-from-https://aistudio.google.com/app/apikey
+npm install
+npm start
+```
+
+Backend runs at `http://localhost:3001` (or set `PORT` in `.env`).
+
+### 3. Frontend
+
+From the project root:
+
+```bash
+npm install
+npm start
+```
+
+Open [http://localhost:3000](http://localhost:3000). Use "Choose video (.mp4)" to upload; the app will return the transcript and generated blog. Use "Copy article" to copy the markdown.
+
+### Environment
+
+- **Backend** (in `backend/` or project root): `GEMINI_API_KEY` (required, get it from [Google AI Studio](https://aistudio.google.com/app/apikey)), optional `PORT`, optional `REQUEST_TIMEOUT_MS`.
+- **Frontend**: optional `REACT_APP_API_URL` (default `http://localhost:3001`).
+
+### Setup: Get your Gemini API key
+
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Click **Create API key** → **Create API key in new project**.
+3. Copy the generated API key and paste it into `backend/.env`:
+   ```env
+   GEMINI_API_KEY=your-copied-key-here
+   ```
+4. Restart the backend and try uploading a video.
+
+The app uses Google's **Gemini 2.5 Flash Lite** model for blog generation and **OpenAI Whisper** for audio transcription (handled transparently).
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
