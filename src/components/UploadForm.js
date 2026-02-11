@@ -65,7 +65,11 @@ export default function UploadForm({ onUploadComplete, onFileSelect, fileName, r
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || `Upload failed: ${response.status}`);
+        // Format error with details if available (e.g., YouTube bot detection)
+        const errorMsg = data.details
+          ? `${data.error}\n\n${data.details}`
+          : (data.error || `Upload failed: ${response.status}`);
+        throw new Error(errorMsg);
       }
 
       setProgress({ upload: true, transcribe: true, generate: false });
@@ -176,6 +180,9 @@ export default function UploadForm({ onUploadComplete, onFileSelect, fileName, r
                 onChange={(e) => setYoutubeUrl(e.target.value)}
                 disabled={loading}
               />
+              <small style={{color: '#f59e0b'}}>
+                ⚠️ Note: Some YouTube videos may be blocked by bot detection. If download fails, try a different video or upload the file directly.
+              </small>
             </div>
           )}
 
