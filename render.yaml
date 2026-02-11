@@ -6,11 +6,13 @@ services:
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: "npm install"
-    startCommand: "npm start"
+    buildCommand: "npm ci || npm install"
+    startCommand: "node index.js"
     healthCheckPath: /health
     autoDeploy: true
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: NODE_VERSION
         value: 22.22.0
       - key: DEEPGRAM_API_KEY

@@ -1,14 +1,21 @@
-import dotenv from 'dotenv';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import express, { json, static as expressStatic } from 'express';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-dotenv.config();
-dotenv.config({ path: resolve(__dirname, '.env.local') });
-dotenv.config({ path: resolve(__dirname, '..', '.env.local') });
 import cors from 'cors';
 import uploadRoutes from './routes/upload.js';
+
+// Load dotenv only in development (production uses platform env vars)
+const __dirname = dirname(fileURLToPath(import.meta.url));
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    const dotenv = await import('dotenv');
+    dotenv.default.config();
+    dotenv.default.config({ path: resolve(__dirname, '.env.local') });
+    dotenv.default.config({ path: resolve(__dirname, '..', '.env.local') });
+  } catch (err) {
+    console.warn('[Server] dotenv not available, using platform environment variables');
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
