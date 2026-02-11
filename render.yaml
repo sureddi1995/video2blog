@@ -6,7 +6,7 @@ services:
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: "npm install --production"
+    buildCommand: "npm install"
     startCommand: "npm start"
     healthCheckPath: /health
     autoDeploy: true
