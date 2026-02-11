@@ -4,6 +4,13 @@ import { join } from 'path';
 import { tmpdir } from 'os';
 import { v4 as uuidv4 } from 'uuid';
 
+// Try to find yt-dlp in common locations
+const YT_DLP_PATHS = [
+  'yt-dlp',                    // PATH
+  '/usr/local/bin/yt-dlp',    // Docker/Linux install
+  '/usr/bin/yt-dlp',          // System install
+];
+
 /**
  * Download YouTube video using yt-dlp CLI
  * Handles SABR streaming and various YouTube format issues
@@ -14,12 +21,27 @@ import { v4 as uuidv4 } from 'uuid';
 async function downloadYouTubeVideo(youtubeUrl) {
   const TEMP_DIR = join(tmpdir(), 'video2blog', 'youtube');
   await fs.mkdir(TEMP_DIR, { recursive: true });
-  
+
   const videoFileName = `${uuidv4()}.mp4`;
   const videoPath = join(TEMP_DIR, videoFileName);
-  
+
   console.log(`[YouTube] Downloading ${youtubeUrl}`);
   console.log(`[YouTube] Saving to ${videoPath}`);
+
+  // Try each yt-dlp path until one works
+  return tryDownloadWithPaths(youtubeUrl, videoPath, YT_DLP_PATHS);
+}
+
+async function tryDownloadWithPaths(youtubeUrl, videoPath, paths, pathIndex = 0) {
+  if (pathIndex >= paths.length) {
+    return Promise.reject(new Error(
+      'yt-dlp not found. Please deploy using Docker to enable YouTube support. ' +
+      'See Dockerfile in backend directory.'
+    ));
+  }
+
+  const ytDlpPath = paths[pathIndex];
+  console.log(`[YouTube] Trying yt-dlp at: ${ytDlpPath}`);
 
   return new Promise((resolve, reject) => {
     // Comprehensive format selection for handling SABR streaming and other YouTube issues
@@ -39,8 +61,15 @@ async function downloadYouTubeVideo(youtubeUrl) {
       youtubeUrl
     ];
 
-    execFile('yt-dlp', args, { timeout: 300000, maxBuffer: 50 * 1024 * 1024 }, (err, stdout, stderr) => {
+    execFile(ytDlpPath, args, { timeout: 300000, maxBuffer: 50 * 1024 * 1024 }, (err, stdout, stderr) => {
       if (err) {
+        // If yt-dlp not found (ENOENT), try next path
+        if (err.code === 'ENOENT') {
+          console.warn(`[YouTube] yt-dlp not found at ${ytDlpPath}, trying next path...`);
+          return tryDownloadWithPaths(youtubeUrl, videoPath, paths, pathIndex + 1)
+            .then(resolve)
+            .catch(reject);
+        }
         console.error(`[YouTube] Download error: ${err.message}`);
         return reject(new Error(`YouTube download failed: ${err.message}`));
       }
