@@ -2,7 +2,7 @@
 node_modules
 npm-debug.log
 yarn-error.log
-package-lock.json
+# NOTE: package-lock.json is NEEDED for npm ci in Docker
 
 # Environment files
 .env
