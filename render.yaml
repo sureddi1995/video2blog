@@ -18,3 +18,10 @@ services:
         sync: false
       - key: PORT
         value: 10000
+      # Optional: provide one cookie strategy for yt-dlp when YouTube blocks anonymous requests
+      - key: YTDLP_COOKIES_FILE
+        sync: false
+      - key: YTDLP_COOKIES_BASE64
+        sync: false
+      - key: YTDLP_COOKIES
+        sync: false

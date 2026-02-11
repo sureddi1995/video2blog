@@ -125,11 +125,11 @@ router.post('/upload-youtube', json(), async (req, res) => {
   } catch (err) {
     console.error('[YouTube] Error:', err.message);
 
-    // Check if it's a bot detection error
-    if (err.message && err.message.includes('Sign in to confirm')) {
+    // Bot-check / login gate from YouTube
+    if (err.code === 'YOUTUBE_AUTH_REQUIRED' || (err.message && err.message.includes('Sign in to confirm'))) {
       return res.status(503).json({
-        error: 'YouTube bot detection triggered. This video cannot be downloaded at this time.',
-        details: 'YouTube has detected automated access. Please try: (1) A different YouTube video, (2) Upload the video file directly instead, or (3) Try again later.',
+        error: 'YouTube requires authentication for this video.',
+        details: 'Configure one of: YTDLP_COOKIES_FILE, YTDLP_COOKIES_BASE64, or YTDLP_COOKIES. Otherwise try a different video or upload the file directly.',
         code: 'YOUTUBE_BOT_DETECTION'
       });
     }
