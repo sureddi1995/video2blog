@@ -3,8 +3,7 @@ import React from 'react';
 export default function BlogOutput({ data }) {
   if (!data) return null;
 
-  const { blog, blogLanguage } = data;
-  const languageNames = { en: 'English', hi: 'Hindi', te: 'Telugu', ta: 'Tamil' };
+  const { blog } = data;
 
   const handleCopyBlog = () => {
     navigator.clipboard.writeText(blog);
