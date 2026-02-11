@@ -6,7 +6,7 @@ services:
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: "npm ci || npm install"
+    buildCommand: "pwd && ls -la && npm --version && node --version && npm install --verbose"
     startCommand: "node index.js"
     healthCheckPath: /health
     autoDeploy: true
