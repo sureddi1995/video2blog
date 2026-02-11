@@ -44,19 +44,18 @@ async function tryDownloadWithPaths(youtubeUrl, videoPath, paths, pathIndex = 0)
   console.log(`[YouTube] Trying yt-dlp at: ${ytDlpPath}`);
 
   return new Promise((resolve, reject) => {
-    // Comprehensive format selection for handling SABR streaming and other YouTube issues
-    // Try: 1) best mp4, 2) best video+audio, 3) best available
+    // Use Android client to bypass YouTube bot detection
+    // Android client is more reliable and less likely to trigger bot detection
     const args = [
-      '-f', '(bv*[ext=mp4][height<=720]+ba[ext=m4a])/best[ext=mp4]/best',
-      '--no-live-from-start',
+      '-f', 'best[ext=mp4][height<=720]/best[ext=mp4]/best',
       '--no-warnings',
-      '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-      '--add-header', 'Referer:https://www.youtube.com',
-      '--add-header', 'Accept-Language:en-US,en;q=0.9',
-      '--extractor-args', 'youtube:player_client=android,web',
-      '--extractor-retries', '3',
+      // Use ONLY Android client (most reliable for avoiding bot detection)
+      '--extractor-args', 'youtube:player_client=android',
+      '--extractor-retries', '5',
       '--no-check-certificates',
-      '--geo-bypass',
+      // Add more retries and timeout
+      '--socket-timeout', '30',
+      '--retries', '3',
       '-o', videoPath,
       youtubeUrl
     ];
@@ -92,16 +91,14 @@ async function tryDownloadWithPaths(youtubeUrl, videoPath, paths, pathIndex = 0)
 
 async function attemptFallbackDownload(youtubeUrl, videoPath) {
   return new Promise((resolve, reject) => {
-    // Try downloading just the best video available (no format restrictions)
+    // Fallback: Try downloading with minimal options (Android client only)
     const fallbackArgs = [
       '-f', 'best',
       '--no-warnings',
-      '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-      '--add-header', 'Referer:https://www.youtube.com',
       '--extractor-args', 'youtube:player_client=android',
       '--no-check-certificates',
-      '--geo-bypass',
       '--socket-timeout', '30',
+      '--retries', '3',
       '-o', videoPath,
       youtubeUrl
     ];
