@@ -7,7 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { extractAudio } from '../utils/ffmpeg.js';
 import { transcribeAudio } from '../utils/whisper.js';
 import { generateBlog } from '../utils/blogGenerator.js';
-import { downloadYouTubeVideo } from '../utils/youtube.js';
+// TEMPORARILY DISABLED: YouTube support requires yt-dlp which is not available on Render free tier
+// import { downloadYouTubeVideo } from '../utils/youtube.js';
 
 const router = Router();
 
@@ -103,7 +104,15 @@ router.post('/upload', upload.single('video'), async (req, res) => {
   }
 });
 
+// TEMPORARILY DISABLED: YouTube support requires yt-dlp which is not available on Render free tier
 // YouTube URL endpoint
+router.post('/upload-youtube', json(), async (_req, res) => {
+  res.status(503).json({
+    error: 'YouTube upload is temporarily disabled. Please use file upload instead.'
+  });
+});
+
+/* COMMENTED OUT - YouTube functionality (requires yt-dlp and FFmpeg)
 router.post('/upload-youtube', json(), async (req, res) => {
   const { youtubeUrl, language, audioLanguage } = req.body;
   let videoPath = null;
@@ -131,5 +140,6 @@ router.post('/upload-youtube', json(), async (req, res) => {
     }
   }
 });
+*/
 
 export default router;

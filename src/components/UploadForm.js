@@ -141,14 +141,15 @@ export default function UploadForm({ onUploadComplete, onFileSelect, fileName, r
               >
                 📁 Upload File
               </button>
-              <button
+              {/* TEMPORARILY DISABLED: YouTube support requires backend dependencies not available on free hosting */}
+              {/* <button
                 type="button"
                 className={inputType === 'youtube' ? 'active' : ''}
                 onClick={() => { setInputType('youtube'); setError(''); }}
                 disabled={loading}
               >
                 ▶️ YouTube URL
-              </button>
+              </button> */}
             </div>
           </div>
 
